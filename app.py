@@ -13,14 +13,33 @@ class UrlRepo(db.Model):
     target = db.Column(db.Integer, default = 0)
     timeStamp = db.Column(db.DateTime, default = datetime.utcnow)
 
-    def __repr__(self):
-        return '<URL: %r>' % self.url
+    # def __repr__(self):
+    #     return '<URL: %r>' % self.url
 
 #bind function to an url
 @app.route('/home', methods=['POST','GET']) 
 def index():
 
-    if request.method == 'POST':
+    # if request.method == 'POST':
+    #     input_url = request.form['url']
+    #     new_url = UrlRepo(url=input_url)
+
+    #     try:
+    #         db.session.add(new_url)
+    #         db.session.commit()
+    #         url = UrlRepo.query.order_by(UrlRepo.timeStamp).all()
+    #         return render_template('repo.html', url=url)
+    #         #return redirect('repo.html', url=url)
+        
+    #     except:
+    #         return "Cannot add URL to the repo"
+
+    # else:
+        return render_template('index.html')
+
+@app.route('/phishing_repo', methods=["POST"])
+def show_repo():
+    if request.method == "POST":
         input_url = request.form['url']
         new_url = UrlRepo(url=input_url)
 
@@ -33,13 +52,9 @@ def index():
         
         except:
             return "Cannot add URL to the repo"
-
-    else:
-        return render_template('index.html')
-
-@app.route('/phishing_repo')
-def show_repo():
-    return render_template('repo.html')
+        
+    if request.method == "GET":
+         return redirect("repo.html")
 
 # @app.route('/dynamicURL/<username>')
 # def show_user(username):
