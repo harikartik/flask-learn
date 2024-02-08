@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        tabel, th, td {
+            border: 1px solid black;
+        }
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phishing Database</title>
+</head>
+
+<div class="content">
+    <center>
+        <h3>Phishing Database</h3>
+        <table>
+            <tr>
+                <th>TimeStamp</th>
+                <th>URL</th>
+                <th>Target Class</th>
+            </tr>
+
+            {% for i in url%}
+            <tr>
+                <td>{{ i.timeStamp }}</td>
+                <td>{{ i.url }}</td>
+                <td>{{ i.target }}</td>
+
+            </tr>
+            {% endfor %}
+        </table>
+    </center>
+</div>
