@@ -1,25 +1,16 @@
-from flask import Flask as flask, render_template, request, redirect
+from flask import Flask as flask, render_template, request, redirect, flash
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
 app = flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///urldatabase.db'
 db = SQLAlchemy(app)
 
-#database Schema
-class UrlRepo(db.Model):
-    id = db.Column(db.Integer, primary_key = True)
-    url = db.Column(db.String(250), nullable = False)
-    target = db.Column(db.Integer, default = 0)
-    timeStamp = db.Column(db.DateTime, default = datetime.utcnow)
+from models import UrlRepo
 
 #bind function to an url
-@app.route('/home') 
+@app.route('/', methods=['POST', "GET"]) 
 def index():
-    return render_template('index.html')
-
-@app.route('/phishing_repo', methods=["POST"])
-def show_repo():
     if request.method == "POST":
         input_url = request.form['url']
         new_url = UrlRepo(url=input_url)
@@ -27,16 +18,20 @@ def show_repo():
         try:
             db.session.add(new_url)
             db.session.commit()
-            url = UrlRepo.query.order_by(UrlRepo.timeStamp).all()
-            return render_template('repo.html', url=url)
-            #return redirect('repo.html', url=url)
+            return redirect('/phishing_repo')
         
         except:
             db.session.rollback()
-            return "Cannot add URL to the repo"
-        
-    if request.method == "GET":
-         return redirect("repo.html")
+            flash("Error adding URL","error")
+            return redirect("/")
+    
+    return render_template('index.html')
 
+@app.route('/phishing_repo', methods=["GET"])
+def show_repo():
+    url_list = UrlRepo.query.order_by(UrlRepo.timeStamp).all()
+    return render_template("repo.html", url=url_list)
+    
 if __name__ == "__main__":
+    db.create_all()
     app.run(debug=True)
